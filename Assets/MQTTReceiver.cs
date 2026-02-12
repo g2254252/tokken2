@@ -23,6 +23,7 @@ public class MQTTReceiver : MonoBehaviour
         public string name;
         public float px, py, pz;
         public float rx, ry, rz, rw;
+        public float timestamp;
     }
 
     [Serializable]
@@ -46,6 +47,8 @@ public class MQTTReceiver : MonoBehaviour
 
     void OnMessageReceived(object sender, MqttMsgPublishEventArgs e)
     {
+        // ★追加：受け取った瞬間に、そのまま「/echo」を付けて送り返す
+        client.Publish(topic + "/echo", e.Message, MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE, false);
         string json = Encoding.UTF8.GetString(e.Message);
         latestData = JsonUtility.FromJson<SyncData>(json);
         newMessage = true;

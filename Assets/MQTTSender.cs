@@ -25,6 +25,7 @@ public class MQTTSender : MonoBehaviour
         public string name;
         public float px, py, pz;
         public float rx, ry, rz, rw;
+        public float timestamp;
     }
 
     [Serializable]
@@ -36,7 +37,25 @@ public class MQTTSender : MonoBehaviour
     void Start()
     {
         client = new MqttClient(brokerAddress);
+        // ★追加：生徒から戻ってきたデータを受け取って計算する
+        client.MqttMsgPublishReceived += (sender, e) => {
+            try {
+                string json = Encoding.UTF8.GetString(e.Message);
+                SyncData echoed = JsonUtility.FromJson<SyncData>(json);
+            if (echoed.objects != null && echoed.objects.Length > 0) {
+                // 現在時刻 - 送信時の時刻 = 往復時間(RTT)
+                float rtt = Time.time - echoed.objects[0].timestamp;
+                // 片道時間はその半分として計算
+                Debug.Log($"[計測データ] 反映時間: {(rtt / 2f) * 1000f:F1} ms");
+            }
+        } catch { /* 解析エラーは無視 */ }
+    };
+
         client.Connect(Guid.NewGuid().ToString());
+
+        // ★追加：返信用トピック(topic + "/echo")を購読
+        client.Subscribe(new string[] { topic + "/echo" }, new byte[] { MqttMsgBase.QOS_LEVEL_AT_LEAST_ONCE });
+
         Debug.Log("MQTT Connected (Sender)");
     }
 
@@ -71,7 +90,8 @@ public class MQTTSender : MonoBehaviour
             rx = t.rotation.x,
             ry = t.rotation.y,
             rz = t.rotation.z,
-            rw = t.rotation.w
+            rw = t.rotation.w,
+            timestamp = Time.time
         };
     }
 }

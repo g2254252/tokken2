@@ -150,7 +150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   earth: {fileID: 1928230553}
   rotationSpeed: 20
-  autoOrbit: 1
+  autoOrbit: 0
 --- !u!4 &129000722
 Transform:
   m_ObjectHideFlags: 0
@@ -566,7 +566,8 @@ MonoBehaviour:
   - {fileID: 745245580}
   - {fileID: 1928230553}
   - {fileID: 129000722}
-  sendInterval: 0.05
+  - {fileID: 836978899}
+  sendInterval: 0.2
 --- !u!4 &1419974840
 Transform:
   m_ObjectHideFlags: 0
@@ -684,7 +685,7 @@ Transform:
   m_GameObject: {fileID: 1928230549}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.9, z: -0.6}
   m_LocalScale: {x: 10, y: 10, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children: []
